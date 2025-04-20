@@ -1,13 +1,14 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart, faSearch, faMapMarkerAlt, faUser } from '@fortawesome/free-solid-svg-icons';
-import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 
 const LandingPage = () => {
+  const navigate = useNavigate();
   return (
     <div>
-      <nav className="flex items-center justify-between bg-[#18230F] text-white px-6 py-4">
-        <div className="text-2xl font-bold">Local Store</div>
+      <nav className="flex items-center justify-between nav-bar text-white px-6 py-4">
+        <div className="text-2xl font-bold">TuniShop</div>
         <div className="xl:w-96">
           <div className="relative flex flex-wrap items-stretch">
             <input
@@ -32,7 +33,7 @@ const LandingPage = () => {
               <p className="text-sm text-white">225 Smith Street</p>
             </div>
           </div>
-          <button className="cursor-pointer bg-[#1F7D53] text-white-500 px-4 py-2 rounded hover:bg-[#255F38] transition duration-300 ease-in-out flex items-center">
+          <button onClick={() => navigate('/login')} className="cursor-pointer bg-[#294861] text-white-500 px-4 py-2 rounded hover:bg-[#255F38] transition duration-300 ease-in-out flex items-center">
             <FontAwesomeIcon icon={faUser} className="mr-2" />
             Login
           </button>
@@ -42,60 +43,86 @@ const LandingPage = () => {
           </div>
         </div>
       </nav>
-      <div className="bg-[#18230F] text-white px-6 py-2 flex justify-center">
+      <div className="bg-[#18230F] text-white px-6 py-2 flex justify-center nav-bar">
         <ul className="flex space-x-15">
           <li className="relative group">
             <span className="hover:text-[#98dcbe] cursor-pointer">Home</span>
           </li>
           <li className="relative group">
-            <span className="hover:text-[#98dcbe] cursor-pointer">Tools</span>
-            <div className="absolute hidden group-hover:block pt-2 left-0">
-              <ul className="bg-[#27391C] text-white rounded shadow-lg w-48">
-                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-default">Work With Us</li>
-                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-default">Work With Us</li>
-                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-default">Work With Us</li>
+            <span className="hover:text-[#98dcbe] cursor-pointer">Shop</span>
+            <div className="absolute hidden group-hover:block pt-4 left-1/2 transform -translate-x-1/2">
+              <ul className="bg-[#0e1b25] text-white rounded shadow-lg w-48">
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">All Products</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Categories</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Men</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Women</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Kids</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Accessories</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Sale</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">New Arrivals</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Best Sellers</li>
               </ul>
             </div>
           </li>
           <li className="relative group">
-            <span className="hover:text-[#98dcbe] cursor-pointer">Home & Kitchen</span>
-            <div className="absolute hidden group-hover:block pt-2 left-0">
-              <ul className="bg-[#27391C] text-white rounded shadow-lg w-48">
-                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-default">Work With Us</li>
-                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-default">Work With Us</li>
-                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-default">Work With Us</li>
+            <span className="hover:text-[#98dcbe] cursor-pointer">About Us</span>
+            <div className="absolute hidden group-hover:block pt-4 left-1/2 transform -translate-x-1/2">
+              <ul className="bg-[#0e1b25] text-white rounded shadow-lg w-48">
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Our Story</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Our Team</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Our Mission</li>
               </ul>
             </div>
           </li>
           <li className="relative group">
-            <span className="hover:text-[#98dcbe] cursor-pointer">Luggage</span>
-            <div className="absolute hidden group-hover:block pt-2 left-0">
-              <ul className="bg-[#27391C] text-white rounded shadow-lg w-48">
-                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-default">Work With Us</li>
-                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-default">Work With Us</li>
-                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-default">Work With Us</li>
+            <span className="hover:text-[#98dcbe] cursor-pointer">Contact</span>
+            <div className="absolute hidden group-hover:block pt-4 left-1/2 transform -translate-x-1/2">
+              <ul className="bg-[#0e1b25] text-white rounded shadow-lg w-48">
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Customer Support</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Store Location</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Business Hours</li>
               </ul>
             </div>
           </li>
           <li className="relative group">
-            <span className="hover:text-[#98dcbe] cursor-pointer">Food</span>
-            <div className="absolute hidden group-hover:block pt-2 left-0">
-              <ul className="bg-[#27391C] text-white rounded shadow-lg w-48">
-                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-default">Work With Us</li>
-                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-default">Work With Us</li>
-                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-default">Work With Us</li>
+            <span className="hover:text-[#98dcbe] cursor-pointer">Account</span>
+            <div className="absolute hidden group-hover:block pt-4 left-1/2 transform -translate-x-1/2">
+              <ul className="bg-[#0e1b25] text-white rounded shadow-lg w-48">
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Login / Register</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Profile</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Order History</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Wishlist</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Logout</li>
               </ul>
             </div>
           </li>
           <li className="relative group">
-            <span className="hover:text-[#98dcbe] cursor-pointer">Gift Cards</span>
+            <span className="hover:text-[#98dcbe] cursor-pointer">Cart</span>
+            <div className="absolute hidden group-hover:block pt-4 left-1/2 transform -translate-x-1/2">
+              <ul className="bg-[#0e1b25] text-white rounded shadow-lg w-48">
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">View Cart</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Checkout</li>
+              </ul>
+            </div>
+          </li>
+          <li className="relative group">
+            <span className="hover:text-[#98dcbe] cursor-pointer">More</span>
+            <div className="absolute hidden group-hover:block pt-4 left-1/2 transform -translate-x-1/2">
+              <ul className="bg-[#0e1b25] text-white rounded shadow-lg w-48">
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">FAQs</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Return Policy</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Shipping Info</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Privacy Policy</li>
+                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Terms & Conditions</li>
+              </ul>
+            </div>
           </li>
         </ul>
       </div>
       <div className="bg-[#f8f1e6] text-[#2a2118] py-12 px-6 text-center font-serif">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Books Are Magic</h1>
+        <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Your Best Local Store</h1>
         <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-6">
-          Your independent bookstore in Cobble Hill/Carroll Gardens and Brooklyn Heights!
+          Discover a curated selection of local products, from artisanal foods to unique home goods. We support local artisans and businesses, bringing you the best of our community. Shop with us and make a difference!
         </p>
         <div className="text-base md:text-lg space-y-2">
           <p>Visit us at <span className="font-semibold">225 Smith St. (at Butler)</span> & <span className="font-semibold">122 Montague St. (at Henry)</span> in Brooklyn.</p>
