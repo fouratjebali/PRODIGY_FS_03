@@ -3,10 +3,11 @@ import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import '../styles/Login.css';
 
 function SignUp() {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         fullName: '',
         username: '',
@@ -25,6 +26,8 @@ function SignUp() {
         confirmPassword: '',
         terms: ''
     });
+    const [isLoading, setIsLoading] = useState(false);
+    const [apiError, setApiError] = useState('');
 
     const validateForm = () => {
         let isValid = true;
@@ -37,13 +40,11 @@ function SignUp() {
             terms: ''
         };
 
-        // Full Name validation
         if (!formData.fullName.trim()) {
             newErrors.fullName = 'Full name is required';
             isValid = false;
         }
 
-        // Username validation
         if (!formData.username.trim()) {
             newErrors.username = 'Username is required';
             isValid = false;
@@ -52,7 +53,6 @@ function SignUp() {
             isValid = false;
         }
 
-        // Email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!formData.email.trim()) {
             newErrors.email = 'Email is required';
@@ -62,7 +62,6 @@ function SignUp() {
             isValid = false;
         }
 
-        // Password validation
         if (!formData.password) {
             newErrors.password = 'Password is required';
             isValid = false;
@@ -71,13 +70,11 @@ function SignUp() {
             isValid = false;
         }
 
-        // Confirm Password validation
         if (formData.password !== formData.confirmPassword) {
             newErrors.confirmPassword = 'Passwords do not match';
             isValid = false;
         }
 
-        // Terms validation
         if (!acceptTerms) {
             newErrors.terms = 'You must accept the terms and conditions';
             isValid = false;
@@ -87,11 +84,47 @@ function SignUp() {
         return isValid;
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setApiError('');
+        
         if (validateForm()) {
-            // Handle signup logic here
-            console.log('Signup data:', formData);
+            setIsLoading(true);
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        fullName: formData.fullName,
+                        username: formData.username,
+                        email: formData.email,
+                        password: formData.password,
+                    }),
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || 'Registration failed');
+                }
+                
+                console.log('Registration successful:', data);
+                
+                navigate('/login', { 
+                    state: { 
+                        message: 'Registration successful! Please log in with your credentials.' 
+                    } 
+                });
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                setApiError(error instanceof Error ? error.message : 'Registration failed. Please try again.');
+            } finally {
+                setIsLoading(false);
+            }
         }
     };
 
@@ -117,6 +150,12 @@ function SignUp() {
                     <h1 className="text-4xl font-bold mb-2 text-white">Sign Up</h1>
                     <p className="text-white mb-8">Create your Local Store account</p>
 
+                    {apiError && (
+                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                            {apiError}
+                        </div>
+                    )}
+
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Full Name */}
                         <div>
@@ -127,6 +166,7 @@ function SignUp() {
                                     placeholder="Full Name"
                                     value={formData.fullName}
                                     onChange={(e) => setFormData(prev => ({...prev, fullName: e.target.value}))}
+                                    disabled={isLoading}
                                 />
                                 {formData.fullName && !errors.fullName && (
                                     <span className="absolute right-3 top-3 text-green-500">✓</span>
@@ -144,6 +184,7 @@ function SignUp() {
                                     placeholder="Username"
                                     value={formData.username}
                                     onChange={(e) => setFormData(prev => ({...prev, username: e.target.value}))}
+                                    disabled={isLoading}
                                 />
                                 {formData.username && !errors.username && (
                                     <span className="absolute right-3 top-3 text-green-500">✓</span>
@@ -161,6 +202,7 @@ function SignUp() {
                                     placeholder="Email"
                                     value={formData.email}
                                     onChange={(e) => setFormData(prev => ({...prev, email: e.target.value}))}
+                                    disabled={isLoading}
                                 />
                                 {formData.email && !errors.email && (
                                     <span className="absolute right-3 top-3 text-green-500">✓</span>
@@ -178,11 +220,13 @@ function SignUp() {
                                     placeholder="Password"
                                     value={formData.password}
                                     onChange={(e) => setFormData(prev => ({...prev, password: e.target.value}))}
+                                    disabled={isLoading}
                                 />
                                 <button 
                                     type="button"
                                     onClick={() => togglePasswordVisibility('password')}
                                     className="absolute right-3 top-3 cursor-pointer"
+                                    disabled={isLoading}
                                 >
                                     <FontAwesomeIcon 
                                         icon={showPassword ? faEyeSlash : faEye} 
@@ -202,11 +246,13 @@ function SignUp() {
                                     placeholder="Confirm Password"
                                     value={formData.confirmPassword}
                                     onChange={(e) => setFormData(prev => ({...prev, confirmPassword: e.target.value}))}
+                                    disabled={isLoading}
                                 />
                                 <button 
                                     type="button"
                                     onClick={() => togglePasswordVisibility('confirmPassword')}
                                     className="absolute right-3 top-3 cursor-pointer"
+                                    disabled={isLoading}
                                 >
                                     <FontAwesomeIcon 
                                         icon={showConfirmPassword ? faEyeSlash : faEye} 
@@ -225,6 +271,7 @@ function SignUp() {
                                 checked={acceptTerms}
                                 onChange={(e) => setAcceptTerms(e.target.checked)}
                                 className="w-4 h-4 text-[#1F7D53] border-gray-300 rounded focus:ring-[#1F7D53]"
+                                disabled={isLoading}
                             />
                             <label htmlFor="terms" className="text-white text-sm">
                                 I accept the <Link to="/terms" className="text-[#1F7D53] hover:underline">Terms and Conditions</Link>
@@ -236,18 +283,27 @@ function SignUp() {
                         <div>
                             <button
                                 type="submit"
-                                className="w-full cursor-pointer bg-[#1F7D53] text-white py-3 rounded-lg hover:bg-[#255F38] transition duration-300"
+                                className="w-full cursor-pointer bg-[#1F7D53] text-white py-3 rounded-lg hover:bg-[#255F38] transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={isLoading}
                             >
-                                Create Account
+                                {isLoading ? 'Creating Account...' : 'Create Account'}
                             </button>
                             <div className="mt-4 text-center text-white">
                                 Or
                             </div>
                             <div className="mt-4 flex space-x-4">
-                                <button className="flex-1 py-3 border cursor-pointer border-gray-300 rounded-lg hover:bg-gray-50 transition duration-300 group">
+                                <button 
+                                    type="button"
+                                    className="flex-1 py-3 border cursor-pointer border-gray-300 rounded-lg hover:bg-gray-50 transition duration-300 group"
+                                    disabled={isLoading}
+                                >
                                     <FontAwesomeIcon icon={faFacebook} className="h-5 w-5 mx-auto text-white group-hover:text-black" />
                                 </button>   
-                                <button className="flex-1 py-3 border cursor-pointer border-gray-300 rounded-lg hover:bg-gray-50 transition duration-300 group">
+                                <button 
+                                    type="button"
+                                    className="flex-1 py-3 border cursor-pointer border-gray-300 rounded-lg hover:bg-gray-50 transition duration-300 group"
+                                    disabled={isLoading}
+                                >
                                     <FontAwesomeIcon icon={faGoogle} className="h-5 w-5 mx-auto text-white group-hover:text-black" />
                                 </button>
                             </div>

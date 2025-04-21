@@ -1,10 +1,23 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart, faSearch, faMapMarkerAlt, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faShoppingCart, faSearch, faMapMarkerAlt, faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
-
+import { useAuth } from '../context/AuthContext';
+import { useState } from 'react';
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <div>
       <nav className="flex items-center justify-between nav-bar text-white px-6 py-4">
@@ -33,10 +46,60 @@ const LandingPage = () => {
               <p className="text-sm text-white">225 Smith Street</p>
             </div>
           </div>
-          <button onClick={() => navigate('/login')} className="cursor-pointer bg-[#294861] text-white-500 px-4 py-2 rounded hover:bg-[#255F38] transition duration-300 ease-in-out flex items-center">
-            <FontAwesomeIcon icon={faUser} className="mr-2" />
-            Login
-          </button>
+          {user ? (
+            <div className="relative">
+              <div 
+                className="flex items-center cursor-pointer"
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+              >
+                {user.profileImageUrl ? (
+                  <img 
+                    src={user.profileImageUrl} 
+                    alt={user.username} 
+                    className="w-8 h-8 rounded-full mr-2"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-[#255F38] flex items-center justify-center mr-2">
+                    <span className="text-white font-bold">
+                      {user.username.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <span className="text-white">{user.username}</span>
+              </div>
+              {showProfileMenu && (
+                <div className="absolute right-0 mt-4 w-48 bg-[#213448] rounded-md shadow-lg  z-50">
+                  <button
+                    onClick={() => navigate('/profile')}
+                    className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-[#1F7D53] cursor-pointer hover:rounded"
+                  >
+                    Profile
+                  </button>
+                  <button
+                    onClick={() => navigate('/orders')}
+                    className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-[#1F7D53] cursor-pointer"
+                  >
+                    Orders
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-[#1F7D53] cursor-pointer hover:rounded"
+                  >
+                    <FontAwesomeIcon icon={faSignOutAlt} className="mr-2 p-0" />
+                    Sign Out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button 
+              onClick={() => navigate('/login')} 
+              className="cursor-pointer bg-[#294861] text-white-500 px-4 py-2 rounded hover:bg-[#255F38] transition duration-300 ease-in-out flex items-center"
+            >
+              <FontAwesomeIcon icon={faUser} className="mr-2" />
+              Login
+            </button>
+          )}
           <div className="flex items-center cursor-pointer">
             <FontAwesomeIcon icon={faShoppingCart} className="mr-2" />
             <span>Cart</span>
@@ -51,7 +114,7 @@ const LandingPage = () => {
           <li className="relative group">
             <span className="hover:text-[#98dcbe] cursor-pointer">Shop</span>
             <div className="absolute hidden group-hover:block pt-4 left-1/2 transform -translate-x-1/2">
-              <ul className="bg-[#0e1b25] text-white rounded shadow-lg w-48">
+              <ul className="bg-[#213448] text-white rounded shadow-lg w-48">
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">All Products</li>
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Categories</li>
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Men</li>
@@ -67,7 +130,7 @@ const LandingPage = () => {
           <li className="relative group">
             <span className="hover:text-[#98dcbe] cursor-pointer">About Us</span>
             <div className="absolute hidden group-hover:block pt-4 left-1/2 transform -translate-x-1/2">
-              <ul className="bg-[#0e1b25] text-white rounded shadow-lg w-48">
+              <ul className="bg-[#213448] text-white rounded shadow-lg w-48">
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Our Story</li>
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Our Team</li>
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Our Mission</li>
@@ -77,7 +140,7 @@ const LandingPage = () => {
           <li className="relative group">
             <span className="hover:text-[#98dcbe] cursor-pointer">Contact</span>
             <div className="absolute hidden group-hover:block pt-4 left-1/2 transform -translate-x-1/2">
-              <ul className="bg-[#0e1b25] text-white rounded shadow-lg w-48">
+              <ul className="bg-[#213448] text-white rounded shadow-lg w-48">
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Customer Support</li>
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Store Location</li>
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Business Hours</li>
@@ -87,7 +150,7 @@ const LandingPage = () => {
           <li className="relative group">
             <span className="hover:text-[#98dcbe] cursor-pointer">Account</span>
             <div className="absolute hidden group-hover:block pt-4 left-1/2 transform -translate-x-1/2">
-              <ul className="bg-[#0e1b25] text-white rounded shadow-lg w-48">
+              <ul className="bg-[#213448] text-white rounded shadow-lg w-48">
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Login / Register</li>
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Profile</li>
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Order History</li>
@@ -99,7 +162,7 @@ const LandingPage = () => {
           <li className="relative group">
             <span className="hover:text-[#98dcbe] cursor-pointer">Cart</span>
             <div className="absolute hidden group-hover:block pt-4 left-1/2 transform -translate-x-1/2">
-              <ul className="bg-[#0e1b25] text-white rounded shadow-lg w-48">
+              <ul className="bg-[#213448] text-white rounded shadow-lg w-48">
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">View Cart</li>
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Checkout</li>
               </ul>
@@ -108,7 +171,7 @@ const LandingPage = () => {
           <li className="relative group">
             <span className="hover:text-[#98dcbe] cursor-pointer">More</span>
             <div className="absolute hidden group-hover:block pt-4 left-1/2 transform -translate-x-1/2">
-              <ul className="bg-[#0e1b25] text-white rounded shadow-lg w-48">
+              <ul className="bg-[#213448] text-white rounded shadow-lg w-48">
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">FAQs</li>
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Return Policy</li>
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Shipping Info</li>
