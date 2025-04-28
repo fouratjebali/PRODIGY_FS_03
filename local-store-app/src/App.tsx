@@ -1,21 +1,23 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LandingPage from './pages/LandingPage.tsx';
-import Login from './pages/Login.tsx';
-import SignUp from './pages/SignUp.tsx';
 import { AuthProvider } from './context/AuthContext';
+import LandingPage from './pages/LandingPage';
+import Login from './pages/Login';
+import SignUp from './pages/SignUp';
+import ProductDetails from './pages/ProductDetails';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
         </Routes>
-      </Router>
-    </AuthProvider>
-  )
+      </AuthProvider>
+    </Router>
+  );
 }
 
-export default App
+export default App;

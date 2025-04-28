@@ -1,0 +1,162 @@
+ users;
+ id                | integer                  |           | not null | nextval('users_id_seq'::regclass)
+ full_name         | character varying(100)   |           | not null |
+ username          | character varying(50)    |           | not null |
+ email             | character varying(100)   |           | not null |
+ password_hash     | character varying(255)   |           | not null |
+ created_at        | timestamp with time zone |           |          | CURRENT_TIMESTAMP
+ updated_at        | timestamp with time zone |           |          | CURRENT_TIMESTAMP
+ last_login        | timestamp with time zone |           |          |
+ is_active         | boolean                  |           |          | true
+ role              | character varying(20)    |           |          | 'user'::character varying
+ profile_image_url | character varying(255)   |           |          |
+ phone_number      | character varying(20)    |           |          |
+ address           | text                     |           |          |
+ city              | character varying(100)   |           |          |
+ state             | character varying(100)   |           |          |
+ zip_code          | character varying(20)    |           |          |
+ country           | character varying(100)   |
+
+create table categories (
+   id          serial                   not null,
+   name        varchar(255)             not null,
+   parent_id   integer                          ,
+   inserted_at timestamp with time zone not null,
+   updated_at  timestamp with time zone not null,
+   constraint pk_categories primary key (id)
+)   ;
+create table products (
+   id                serial                   not null      ,
+   sku               varchar(255)             not null      ,
+   name              varchar(255)             not null      ,
+   description       text                                   ,
+   product_status_id integer                  not null      ,
+   regular_price     numeric                   default 0    ,
+   discount_price    numeric                   default 0    ,
+   quantity          integer                   default 0    ,
+   taxable           bool                      default false,
+   inserted_at       timestamp with time zone not null      ,
+   updated_at        timestamp with time zone not null      ,
+   constraint pk_products primary key (id)
+)   ;
+create table tags (
+   id          serial                   not null,
+   name        varchar(255)             not null,
+   inserted_at timestamp with time zone not null,
+   updated_at  timestamp with time zone not null,
+   constraint pk_tags primary key (id)
+)   ;
+create table sales_orders (
+   id          serial                   not null,
+   order_date  date                     not null,
+   total       numeric                  not null,
+   coupon_id   integer                          ,
+   session_id  varchar(255)             not null,
+   user_id     integer                  not null,
+   inserted_at timestamp with time zone not null,
+   updated_at  timestamp with time zone not null,
+   constraint pk_sales_orders primary key (id)
+)   ;
+create table coupons (
+   id          serial                   not null      ,
+   code        varchar(255)             not null      ,
+   description text                                   ,
+   active      bool                      default true ,
+   value       numeric                                ,
+   multiple    bool                      default false,
+   start_date  timestamp with time zone               ,
+   end_date    timestamp with time zone               ,
+   inserted_at timestamp with time zone not null      ,
+   updated_at  timestamp with time zone not null      ,
+   constraint pk_coupons primary key (id)
+)   ;
+create table product_tags (
+   product_id  integer                  not null,
+   tag_id      integer                  not null,
+   inserted_at timestamp with time zone not null,
+   updated_at  timestamp with time zone not null,
+   constraint pk_product_tags primary key (product_id,tag_id)
+)   ;
+create table cc_transactions (
+   id                 serial                   not null,
+   code               varchar(255)                     ,
+   order_id           integer                  not null,
+   transdate          timestamp with time zone         ,
+   processor          varchar(255)             not null,
+   processor_trans_id varchar(255)             not null,
+   amount             numeric                  not null,
+   cc_num             varchar(255)                     ,
+   cc_type            varchar(255)                     ,
+   response           text                             ,
+   inserted_at        timestamp with time zone not null,
+   updated_at         timestamp with time zone not null,
+   constraint pk_cc_transactions primary key (id)
+)   ;
+create table sessions (
+   id          varchar(255)             not null,
+   data        text                             ,
+   inserted_at timestamp with time zone not null,
+   updated_at  timestamp with time zone not null,
+   constraint pk_sessions primary key (id)
+)   ;
+create table product_statuses (
+   id          serial                   not null,
+   name        varchar(255)             not null,
+   inserted_at timestamp with time zone not null,
+   updated_at  timestamp with time zone not null,
+   constraint pk_product_statuses primary key (id)
+)   ;
+create table product_categories (
+   category_id integer                  not null,
+   product_id  integer                  not null,
+   inserted_at timestamp with time zone not null,
+   updated_at  timestamp with time zone not null,
+   constraint pk_product_categories primary key (category_id,product_id)
+)   ;
+create table order_products (
+   id          serial                   not null,
+   order_id    integer                          ,
+   sku         varchar(255)             not null,
+   name        varchar(255)             not null,
+   description text                             ,
+   price       numeric                  not null,
+   quantity    integer                  not null,
+   subtotal    numeric                  not null,
+   inserted_at timestamp with time zone not null,
+   updated_at  timestamp with time zone not null,
+   constraint pk_order_products primary key (id)
+)   ;
+
+alter table sales_orders add constraint fk_coupon_order 
+    foreign key (coupon_id)
+    references coupons (id) ;
+alter table product_tags add constraint fk_products_product_tags 
+    foreign key (product_id)
+    references products (id) ;
+alter table product_tags add constraint fk_tags_product_tags 
+    foreign key (tag_id)
+    references tags (id) ;
+alter table product_categories add constraint fk_category_products_categories 
+    foreign key (category_id)
+    references categories (id) ;
+alter table sales_orders add constraint fk_user_sales_order 
+    foreign key (user_id)
+    references users (id) ;
+alter table sales_orders add constraint fk_session_sales_order 
+    foreign key (session_id)
+    references sessions (id) ;
+alter table products add constraint fk_product_statuses_product 
+    foreign key (product_status_id)
+    references product_statuses (id) ;
+alter table order_products add constraint fk_sales_orders_order_products 
+    foreign key (order_id)
+    references sales_orders (id) ;
+alter table cc_transactions add constraint fk_sales_order_cc_transaction 
+    foreign key (order_id)
+    references sales_orders (id) ;
+alter table product_categories add constraint fk_product_product_category 
+    foreign key (product_id)
+    references products (id) ;
+alter table categories add constraint fk_category_parent_category 
+    foreign key (parent_id)
+    references categories (id) ;

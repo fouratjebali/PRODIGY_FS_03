@@ -2,12 +2,51 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart, faSearch, faMapMarkerAlt, faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import ProductCard from '../components/ProductCard';
+
+interface Product {
+  id: number;
+  name: string;
+  regularPrice: number;
+  discountPrice: number;
+  primaryImage: {
+  imageUrl: string;
+  };
+}
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/products');
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        const data = await response.json();
+        const updatedProducts = data.map((product: any) => ({
+          ...product,
+          regularPrice: parseFloat(product.regularPrice),  
+          discountPrice: product.discountPrice ? parseFloat(product.discountPrice) : null, 
+        }));
+        setProducts(updatedProducts);
+        console.log(updatedProducts);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load products');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -17,6 +56,7 @@ const LandingPage = () => {
       console.error('Logout failed:', error);
     }
   };
+  
 
   return (
     <div>
@@ -191,6 +231,30 @@ const LandingPage = () => {
           <p>Visit us at <span className="font-semibold">225 Smith St. (at Butler)</span> & <span className="font-semibold">122 Montague St. (at Henry)</span> in Brooklyn.</p>
           <p>Open everyday 10am-6pm. Come say hi!</p>
         </div>
+      </div>
+
+      {/* Products Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h2 className="text-3xl font-bold text-gray-900 mb-8">Featured Products</h2>
+        
+        {loading ? (
+          <div className="text-center text-gray-600">Loading products...</div>
+        ) : error ? (
+          <div className="text-center text-red-600">{error}</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {products.map((product) => (
+              <ProductCard
+                key={product.id}
+                id={product.id}
+                name={product.name}
+                regularPrice={product.regularPrice}
+                discountPrice={product.discountPrice}
+                imageUrl={`http://localhost:5000${product.primaryImage?.imageUrl}`}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
