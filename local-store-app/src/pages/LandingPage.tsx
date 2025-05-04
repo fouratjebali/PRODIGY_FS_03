@@ -1,9 +1,11 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart, faSearch, faMapMarkerAlt, faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
+import Footer from '../components/Footer';
+
 
 interface Product {
   id: number;
@@ -141,8 +143,10 @@ const LandingPage = () => {
             </button>
           )}
           <div className="flex items-center cursor-pointer">
-            <FontAwesomeIcon icon={faShoppingCart} className="mr-2" />
-            <span>Cart</span>
+            <Link to="/cart" className="flex items-center">
+              <FontAwesomeIcon icon={faShoppingCart} className="mr-2" />
+              <span>Cart</span>
+            </Link>
           </div>
         </div>
       </nav>
@@ -256,7 +260,9 @@ const LandingPage = () => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
+    
   );
 };
 

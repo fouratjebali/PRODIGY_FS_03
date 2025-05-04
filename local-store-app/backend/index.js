@@ -10,6 +10,7 @@ const userRoutes = require('./routes/user');
 const db = require('./db');
 const session = require('express-session');
 const productRoutes = require('./routes/productRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 
 dotenv.config();
 
@@ -17,7 +18,12 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 
-app.use(cors());
+const corsOptions = {
+  origin: 'http://localhost:5173',
+  credentials: true, 
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
@@ -41,6 +47,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', userRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/cart', cartRoutes);
 
 console.log("connected to db", process.env.DB_USER, process.env.DB_HOST, process.env.DB_NAME, process.env.DB_PORT);
 

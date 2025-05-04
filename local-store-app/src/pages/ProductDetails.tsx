@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+import { addToCart } from '../services/cartService';
 
 interface Product {
   id: number;
@@ -17,6 +18,8 @@ interface Product {
     altText: string;
   }[];
 }
+
+
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -34,7 +37,6 @@ const ProductDetails = () => {
         }
         const data = await response.json();
         setProduct(data);
-        // Set the primary image as selected by default
         const primaryImage = data.images.find((img: any) => img.isPrimary);
         if (primaryImage) {
           setSelectedImage(primaryImage.imageUrl);
@@ -68,10 +70,32 @@ const ProductDetails = () => {
     );
   }
 
+  const handleAddToCart = async () => {
+    try {
+      console.log('Adding to cart:', product.id);
+      if (product) {
+        const response = await fetch('http://localhost:5000/api/cart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId: product.id, quantity: 1 }),
+          credentials: 'include', 
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to add product to cart');
+        }
+  
+        alert('Product added to cart!');
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert('Failed to add product to cart');
+    }
+  };
+
   const hasDiscount = Number(product.discountPrice) > 0;
   const displayPrice = hasDiscount ? product.discountPrice : product.regularPrice;
 
-  // Helper function to get full image URL
   const getFullImageUrl = (imageUrl: string) => {
     return imageUrl.startsWith('http') 
       ? imageUrl 
@@ -139,8 +163,9 @@ const ProductDetails = () => {
 
               <div className="flex items-center gap-4">
                 <button
-                  className="flex-1 bg-[#255F38] text-white px-6 py-3 rounded-lg hover:bg-[#1F7D53] transition-colors duration-300 flex items-center justify-center gap-2"
+                  className="cursor-pointer flex-1 bg-[#255F38] text-white px-6 py-3 rounded-lg hover:bg-[#1F7D53] transition-colors duration-300 flex items-center justify-center gap-2"
                   disabled={product.quantity === 0}
+                  onClick={handleAddToCart}
                 >
                   <FontAwesomeIcon icon={faShoppingCart} />
                   {product.quantity > 0 ? 'Add to Cart' : 'Out of Stock'}
