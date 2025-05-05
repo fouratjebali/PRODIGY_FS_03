@@ -10,6 +10,7 @@ const getProducts = async (req, res) => {
         p.discount_price as "discountPrice",
         p.quantity,
         p.description,
+        k.name as "category",
         (
           SELECT json_build_object(
             'imageUrl', pi.image_url,
@@ -20,6 +21,7 @@ const getProducts = async (req, res) => {
           LIMIT 1
         ) as "primaryImage"
       FROM products p
+      JOIN categories k ON k.parent_id = p.id
       WHERE p.product_status_id = 1
       ORDER BY p.inserted_at DESC
     `);
@@ -75,7 +77,22 @@ const getProductById = async (req, res) => {
   }
 };
 
+const getCategories = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id, name
+      FROM categories
+    `);
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getProducts,
-  getProductById
+  getProductById,
+  getCategories
 }; 

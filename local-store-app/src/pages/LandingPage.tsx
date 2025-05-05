@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart, faSearch, faMapMarkerAlt, faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faShoppingCart, faSearch, faMapMarkerAlt, faUser, faSignOutAlt, faFilter, faChevronDown, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useState, useEffect } from 'react';
@@ -13,8 +13,9 @@ interface Product {
   regularPrice: number;
   discountPrice: number;
   primaryImage: {
-  imageUrl: string;
+    imageUrl: string;
   };
+  category: string;
 }
 
 const LandingPage = () => {
@@ -24,6 +25,29 @@ const LandingPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [category, setCategory] = useState<string | null>(null);
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
+
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/products/categories');
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories');
+        }
+        const data = await response.json();
+        setCategories(data);
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -35,8 +59,8 @@ const LandingPage = () => {
         const data = await response.json();
         const updatedProducts = data.map((product: any) => ({
           ...product,
-          regularPrice: parseFloat(product.regularPrice),  
-          discountPrice: product.discountPrice ? parseFloat(product.discountPrice) : null, 
+          regularPrice: parseFloat(product.regularPrice),
+          discountPrice: product.discountPrice ? parseFloat(product.discountPrice) : null,
         }));
         setProducts(updatedProducts);
         console.log(updatedProducts);
@@ -58,7 +82,26 @@ const LandingPage = () => {
       console.error('Logout failed:', error);
     }
   };
-  
+  useEffect(() => {
+    const applyFilters = () => {
+      let filtered = products;
+
+      filtered = filtered.filter(
+        (product) =>
+          product.regularPrice >= priceRange[0] &&
+          product.regularPrice <= priceRange[1]
+      );
+
+      if (category) {
+        filtered = filtered.filter((product) => product.category === category);
+      }
+
+      setFilteredProducts(filtered);
+    };
+
+    applyFilters();
+  }, [products, priceRange, category]);
+
 
   return (
     <div>
@@ -90,14 +133,14 @@ const LandingPage = () => {
           </div>
           {user ? (
             <div className="relative">
-              <div 
+              <div
                 className="flex items-center cursor-pointer"
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
               >
                 {user.profileImageUrl ? (
-                  <img 
-                    src={user.profileImageUrl} 
-                    alt={user.username} 
+                  <img
+                    src={user.profileImageUrl}
+                    alt={user.username}
                     className="w-8 h-8 rounded-full mr-2"
                   />
                 ) : (
@@ -134,8 +177,8 @@ const LandingPage = () => {
               )}
             </div>
           ) : (
-            <button 
-              onClick={() => navigate('/login')} 
+            <button
+              onClick={() => navigate('/login')}
               className="cursor-pointer bg-[#294861] text-white-500 px-4 py-2 rounded hover:bg-[#255F38] transition duration-300 ease-in-out flex items-center"
             >
               <FontAwesomeIcon icon={faUser} className="mr-2" />
@@ -236,18 +279,105 @@ const LandingPage = () => {
           <p>Open everyday 10am-6pm. Come say hi!</p>
         </div>
       </div>
+      <div className="bg-white shadow-md rounded-lg p-6 mb-8">
+        <h3 className="text-xl font-bold mb-6 text-gray-800">Filter Products</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex items-center justify-between mb-4">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`items-center px-4 py-2 rounded-lg transition-all duration-300 text-sm ${showFilters
+                  ? 'bg-white text-[#255F38] border border-[#255F38] hover:bg-[#F0F7F4]'
+                  : 'bg-[#255F38] text-white hover:bg-[#1F7D53]'
+                }`}
+            >
+              <FontAwesomeIcon
+                icon={showFilters ? faTimes : faFilter}
+                className="mr-2"
+              />
+              {showFilters ? 'Close' : 'Filter'}
+            </button>
+          </div>
+
+          {showFilters && (
+            <div className="bg-white rounded-lg p-4 mb-6 border border-[#E0E0E0] shadow-sm w-full max-w-2xl mx-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Refine Products</h3>
+                <button
+                  onClick={() => {
+                    setPriceRange([0, 5000]);
+                    setCategory(null);
+                  }}
+                  className="text-xs text-[#255F38] hover:text-[#1F7D53] hover:underline"
+                >
+                  Reset Filters
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
+                  <div className="flex items-center space-x-3">
+                    <div className="flex-1">
+                      <div className="relative">
+                        <span className="absolute left-2 top-2 text-xs text-gray-400">$</span>
+                        <input
+                          type="number"
+                          value={priceRange[0]}
+                          onChange={(e) => setPriceRange([Math.min(+e.target.value, priceRange[1]), priceRange[1]])}
+                          className="w-full pl-6 pr-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-[#255F38] focus:border-[#255F38]"
+                          placeholder="Min"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <div className="relative">
+                        <span className="absolute left-2 top-2 text-xs text-gray-400">$</span>
+                        <input
+                          type="number"
+                          value={priceRange[1]}
+                          onChange={(e) => setPriceRange([priceRange[0], Math.max(+e.target.value, priceRange[0])])}
+                          className="w-full pl-6 pr-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-[#255F38] focus:border-[#255F38]"
+                          placeholder="Max"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Category Filter - More compact */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <select
+                    value={category || ''}
+                    onChange={(e) => setCategory(e.target.value || null)}
+                    className="w-full px-3 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-[#255F38] focus:border-[#255F38]"
+                  >
+                    <option value="">All Categories</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.name}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
 
       {/* Products Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h2 className="text-3xl font-bold text-gray-900 mb-8">Featured Products</h2>
-        
+
         {loading ? (
           <div className="text-center text-gray-600">Loading products...</div>
         ) : error ? (
           <div className="text-center text-red-600">{error}</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}
                 id={product.id}
@@ -262,7 +392,7 @@ const LandingPage = () => {
       </div>
       <Footer />
     </div>
-    
+
   );
 };
 
