@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faShoppingCart, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { addToCart } from '../services/cartService';
 
 interface Product {
@@ -27,6 +27,8 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [notification, setNotification] = useState<string | null>(null);
+
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -84,12 +86,13 @@ const ProductDetails = () => {
         if (!response.ok) {
           throw new Error('Failed to add product to cart');
         }
-  
-        alert('Product added to cart!');
+        setNotification('Product added to cart!');
+        setTimeout(() => setNotification(null), 5000);
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
-      alert('Failed to add product to cart');
+      setNotification('Failed to add product to cart');
+      setTimeout(() => setNotification(null), 5000);
     }
   };
 
@@ -101,11 +104,38 @@ const ProductDetails = () => {
       ? imageUrl 
       : `http://localhost:5000${imageUrl}`;
   };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-2xl text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+        <div className="text-2xl text-red-600 mb-4">{error || 'Product not found'}</div>
+        <Link to="/" className="text-[#255F38] hover:underline">
+          Return to Home
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
+      {/* Notification */}
+      {notification && (
+        <div className="w-90 h-20 fixed top-4 right-4 bg-white text-black px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 ">
+          <span>{notification}</span>
+          <button onClick={() => setNotification(null)} className='absolute right-4 cursor-pointer'>
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
+        </div>
+      )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="inline-flex items-center text-[#255F38] mb-8 hover:underline">
+        <Link to="/" className="inline-flex items-center text-gray-800 mb-8 hover:underline">
           <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
           Back to Products
         </Link>

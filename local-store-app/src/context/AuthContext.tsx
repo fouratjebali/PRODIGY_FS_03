@@ -7,6 +7,7 @@ interface User {
   email: string;
   role: string;
   profileImageUrl?: string;
+  emailVerified?: boolean; // Add email verification status
 }
 
 interface AuthContextType {
@@ -14,6 +15,9 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (userData: User) => void;
   logout: () => void;
+  updateUser: (data: { username: string; email: string }) => Promise<void>;
+  verifyEmail: () => Promise<void>;
+  changePassword: (data: { currentPassword: string; newPassword: string }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -46,7 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem('user');
-    
+
     fetch('http://localhost:5000/api/auth/logout', {
       method: 'POST',
       credentials: 'include',
@@ -55,8 +59,78 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const updateUser = async (data: { username: string; email: string }) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/update', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update user information');
+      }
+
+      const updatedUser = await response.json();
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    } catch (error) {
+      console.error('Error updating user information:', error);
+      throw error;
+    }
+  };
+
+  const verifyEmail = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/verify-email', {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send verification email');
+      }
+
+      const updatedUser = { ...user, emailVerified: true };
+      setUser(updatedUser as User);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    } catch (error) {
+      console.error('Error sending verification email:', error);
+      throw error;
+    }
+  };
+
+  const changePassword = async (data: { currentPassword: string; newPassword: string }) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to change password');
+      }
+    } catch (error) {
+      console.error('Error changing password:', error);
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated,
+        login,
+        logout,
+        updateUser,
+        verifyEmail,
+        changePassword,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -68,4 +142,4 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}; 
+};

@@ -11,6 +11,8 @@ const db = require('./db');
 const session = require('express-session');
 const productRoutes = require('./routes/productRoutes');
 const cartRoutes = require('./routes/cartRoutes');
+const checkoutRoutes = require('./routes/payementRoute');
+
 
 dotenv.config();
 
@@ -48,6 +50,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api', checkoutRoutes);
 
 console.log("connected to db", process.env.DB_USER, process.env.DB_HOST, process.env.DB_NAME, process.env.DB_PORT);
 

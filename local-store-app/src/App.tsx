@@ -5,6 +5,9 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Cart from './components/cart';
 import ProductDetails from './pages/ProductDetails';
+import CheckoutPage from './pages/CheckoutPage';
+import ProfilePage from './pages/ProfilePage';
+
 
 function App() {
   return (
@@ -16,6 +19,8 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Routes>
       </AuthProvider>
     </Router>

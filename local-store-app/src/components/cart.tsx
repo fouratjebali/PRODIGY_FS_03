@@ -9,19 +9,26 @@ import {
   faCreditCard
 } from '@fortawesome/free-solid-svg-icons';
 import { getCart, removeFromCart, updateCartItem } from '../services/cartService';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Cart = () => {
   const [cart, setCart] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [updatingItems, setUpdatingItems] = useState<number[]>([]);
+  const navigate = useNavigate();
+  const totalAmount = cart?.items?.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0) || 0;
+
+    const handleProceedToCheckout = () => {
+        navigate('/checkout', { state: { amount: totalAmount } }); 
+    };
+
 
   useEffect(() => {
     const fetchCart = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/cart', {
           method: 'GET',
-          credentials: 'include', // Include cookies in the request
+          credentials: 'include', 
         });
 
         if (!response.ok) {
@@ -220,7 +227,7 @@ const Cart = () => {
                 </div>
               </div>
 
-              <button className="cursor-pointer w-full bg-[#213448] hover:bg-green-700 text-white py-3 px-4 rounded-md font-medium transition-colors flex items-center justify-center">
+              <button onClick={handleProceedToCheckout} className="cursor-pointer w-full bg-[#213448] hover:bg-green-700 text-white py-3 px-4 rounded-md font-medium transition-colors flex items-center justify-center">
                 <FontAwesomeIcon icon={faCreditCard} className="mr-2" />
                 Proceed to Checkout
               </button>
