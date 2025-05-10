@@ -28,10 +28,9 @@ const Footer = () => {
           {/* Store Location */}
           <div>
             <h3 className="text-lg font-bold mb-4">Our Location</h3>
-            <p>225 Smith St. (at Butler), Brooklyn</p>
-            <p>122 Montague St. (at Henry), Brooklyn</p>
+            <p>225 Tahar ben achour , Sousse</p>
             <a
-              href="https://www.google.com/maps?q=225+Smith+St,+Brooklyn"
+              href="https://maps.app.goo.gl/VpqQ9j26dw9pdpuJA"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#98dcbe] hover:underline"

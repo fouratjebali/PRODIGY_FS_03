@@ -9,8 +9,7 @@ import {
   faEnvelope, 
   faSignOutAlt, 
   faShoppingCart,
-  faPalette,
-  faCog
+  faPalette
 } from '@fortawesome/free-solid-svg-icons';
 
 const ProfilePage = () => {

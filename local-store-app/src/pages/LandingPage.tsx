@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart, faSearch, faMapMarkerAlt, faUser, faSignOutAlt, faFilter, faChevronDown, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faShoppingCart, faSearch, faMapMarkerAlt, faUser, faSignOutAlt, faFilter, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useState, useEffect } from 'react';
@@ -127,8 +127,8 @@ const LandingPage = () => {
           <div className="flex items-center cursor-pointer">
             <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
             <div className="flex flex-col">
-              <span className="font-bold uppercase text-white">Smith Street Location</span>
-              <p className="text-sm text-white">225 Smith Street</p>
+              <span className="font-bold uppercase text-white">Tahar Ben Achour Street</span>
+              <p className="text-sm text-white">225 C116 Street</p>
             </div>
           </div>
           {user ? (
@@ -239,7 +239,7 @@ const LandingPage = () => {
             <div className="absolute hidden group-hover:block pt-4 left-1/2 transform -translate-x-1/2">
               <ul className="bg-[#213448] text-white rounded shadow-lg w-48">
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Login / Register</li>
-                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Profile</li>
+                <li onClick={() => navigate('/profile')} className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Profile</li>
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Order History</li>
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer">Wishlist</li>
                 <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Logout</li>
@@ -250,8 +250,8 @@ const LandingPage = () => {
             <span className="hover:text-[#98dcbe] cursor-pointer">Cart</span>
             <div className="absolute hidden group-hover:block pt-4 left-1/2 transform -translate-x-1/2">
               <ul className="bg-[#213448] text-white rounded shadow-lg w-48">
-                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">View Cart</li>
-                <li className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Checkout</li>
+                <li onClick={() => navigate('/cart')} className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">View Cart</li>
+                <li onClick={() => navigate('/checkout')} className="px-4 py-2 hover:bg-[#1F7D53] cursor-pointer hover:rounded">Checkout</li>
               </ul>
             </div>
           </li>
@@ -275,7 +275,7 @@ const LandingPage = () => {
           Discover a curated selection of local products, from artisanal foods to unique home goods. We support local artisans and businesses, bringing you the best of our community. Shop with us and make a difference!
         </p>
         <div className="text-base md:text-lg space-y-2">
-          <p>Visit us at <span className="font-semibold">225 Smith St. (at Butler)</span> & <span className="font-semibold">122 Montague St. (at Henry)</span> in Brooklyn.</p>
+          <p>Visit us at <span className="font-semibold">Tahar Ben Achour Street (at Sousse)</span> <span className="font-semibold">225 C116 </span></p>
           <p>Open everyday 10am-6pm. Come say hi!</p>
         </div>
       </div>

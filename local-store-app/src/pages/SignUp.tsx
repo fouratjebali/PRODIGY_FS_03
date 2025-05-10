@@ -142,7 +142,7 @@ function SignUp() {
             <div className="w-1/2 flex items-center justify-center mt-20 mb-20">
                 <div className="w-full max-w-md">
                     <div className="mb-8">
-                        <Link to="/" className="text-white">
+                        <Link to="/login" className="text-white">
                             <span className='hover:bg-white hover:text-black border border-white rounded p-2'>←</span>
                         </Link>
                     </div>
